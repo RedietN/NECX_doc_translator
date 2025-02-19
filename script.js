@@ -98,7 +98,7 @@ async function detectLanguage(text) {
         // Update dropdown with available languages
         updateLanguageDropdown();
         
-        console.log("Detected Language:", language);
+        // console.log("Detected Language:", language);
         return language;
     } catch (error) {
         console.error("Error detecting language:", error);
@@ -159,7 +159,7 @@ function updateViewScreen() {
     documentViewer.innerHTML = currentDocument.content;
 
     const documentText = documentViewer.textContent || '';
-    console.log('Document Text:', documentText);
+    // console.log('Document Text:', documentText);
     detectLanguage(documentText);
 }
 
@@ -291,10 +291,6 @@ async function handleTranslate() {
         // Use a simple fetch without extra headers or mode options
         const response = await fetch(translated_doc_url,{
             method: 'GET',
-            // mode: 'no-cors',
-            // headers: {
-            //     'Accept': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            // }
         });
         
         if (!response.ok) {
@@ -326,7 +322,7 @@ async function handleTranslate() {
         updateViewScreen();
     } catch (error) {
         console.error('Error fetching translated document:', error);
-        alert(`Error loading translated document: ${error.message}. Please try again.`);
+        alert(`Error loading translated document. Please try again.`);
     } finally {
         isTranslating = false;
         translateButton.innerHTML = originalText;

@@ -7,7 +7,12 @@
     --text-primary: #1f2937;
     --text-secondary: #4b5563;
 }
-
+.logo{
+    
+    margin-left: 120px;
+    margin-bottom: 30px;
+    height: 161px;
+}
 * {
     margin: 0;
     padding: 0;
