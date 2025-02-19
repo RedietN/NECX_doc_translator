@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NECX Document Translation</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.7.0/mammoth.browser.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Upload Screen -->
+        <div id="uploadScreen" class="screen">
+            <div class="container">
+                <div class="header">
+                    <h1>NECX Document Translation</h1>
+                    <p>Upload your document to begin translation</p>
+                </div>
+                
+                <div class="upload-area" id="dropZone">
+                    <div class="upload-content">
+                        <div class="icon-container">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="upload-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </div>
+                        <p class="upload-text">Drop your document here or click to browse</p>
+                        <p class="upload-subtext">Supported format: .docx</p>
+                    </div>
+                    <input type="file" id="fileInput" accept=".docx" class="file-input" />
+                </div>
+            </div>
+        </div>
+
+        <!-- View Screen -->
+        <div id="viewScreen" class="screen hidden">
+            <div class="view-container">
+                <!-- Header -->
+                <div class="view-header">
+                    <div class="header-left">
+                        <button id="backButton" class="back-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                            Back to Upload
+                        </button>
+                        <div class="divider"></div>
+                        <div class="file-info">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            <span id="fileName">document.docx</span>
+                        </div>
+                    </div>
+                    
+                    <div class="header-right">
+                        <button id="downloadButton" class="download-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <span id="downloadText">Download</span>
+                        </button>
+
+                        <div class="language-select">
+                            <button id="languageButton" class="language-button">
+                                <span>Translate to: <span id="selectedLanguage">Select a language</span></span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+                            <div id="languageDropdown" class="language-dropdown hidden">
+                                <!-- Language options will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <button id="translateButton" class="translate-button" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+                            Translate
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Document Info Bar -->
+                <div class="info-bar">
+                    <span id="fileSize">Size: 0 KB</span>
+                    <span class="dot">•</span>
+                    <span id="lastModified">Last Modified: Never</span>
+                </div>
+
+                <!-- Document Content -->
+                <div class="document-content">
+                    <div id="documentViewer" class="document-viewer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
