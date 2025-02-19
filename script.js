@@ -201,7 +201,7 @@ async function translateFile(file) {
         }
 
         const data = await response.json();
-        return data["translatedFileUrl"];
+        return data["translatedFileUrl"].replace("http://", "https://");;
     } catch (error) {
         console.error('Error translating file:', error);
         throw error;
@@ -285,39 +285,44 @@ async function handleTranslate() {
     `;
     translateButton.disabled = true;
 
+    let translated_doc_url = await translateFile(currentDocument.file);
+    console.log("Translated data: " + translated_doc_url);
     try {
-        let translated_doc_url = await translateFile(currentDocument.file);
-        console.log("Translated data: " + translated_doc_url);
-
-        const response = await fetch('https://necx-translation.blackrock-67f1a185.eastus.azurecontainerapps.io/proxy_download', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ url: translated_doc_url })
+        // Use a simple fetch without extra headers or mode options
+        const response = await fetch(translated_doc_url,{
+            method: 'GET',
+            // mode: 'no-cors',
+            // headers: {
+            //     'Accept': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            // }
         });
-
+        
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        const fileBlob = await response.blob();
-        const arrayBuffer = await fileBlob.arrayBuffer();
+        
+        // Directly obtain the arrayBuffer from the response
+        const arrayBuffer = await response.arrayBuffer();
+        
+        // Convert the ArrayBuffer to HTML using Mammoth.js
         const result = await mammoth.convertToHtml({ arrayBuffer });
-
+        
+        // Determine target language from UI (e.g., "es" for Spanish)
         const targetLang = detectLang(selectedLanguage.textContent);
+        
+        // Update the current document with the translated content and new file
         currentDocument = {
             name: currentDocument.name.replace('.docx', `_${targetLang}.docx`),
-            size: fileBlob.size,
-            lastModified: new Date().getTime(),
+            size: arrayBuffer.byteLength,
+            lastModified: Date.now(),
             content: result.value,
-            file: new File([fileBlob], currentDocument.name.replace('.docx', `_${targetLang}.docx`), {
+            file: new File([arrayBuffer], currentDocument.name.replace('.docx', `_${targetLang}.docx`), {
                 type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                lastModified: new Date().getTime()
+                lastModified: Date.now()
             })
         };
 
+        // Refresh the UI with the new document content
         updateViewScreen();
     } catch (error) {
         console.error('Error fetching translated document:', error);
