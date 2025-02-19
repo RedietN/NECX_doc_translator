@@ -15,11 +15,23 @@ const translateButton = document.getElementById('translateButton');
 const downloadButton = document.getElementById('downloadButton');
 const downloadText = document.getElementById('downloadText');
 
+// Create alert element
+const translationAlert = document.createElement('div');
+translationAlert.className = 'translation-alert';
+translationAlert.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    <span>Translation completed successfully!</span>
+`;
+document.body.appendChild(translationAlert);
+
 // State
 let currentDocument = null;
 let isTranslating = false;
 let downloadStatus = 'idle';
 let langDetected = "";
+let alertTimeout = null;
 
 // Initialize
 const list_of_languages = {
@@ -30,6 +42,25 @@ const list_of_languages = {
     "Italian": "it",
     "Portuguese": "pt"
 };
+
+// Show alert function
+function showTranslationAlert() {
+    // Clear any existing timeout
+    if (alertTimeout) {
+        clearTimeout(alertTimeout);
+        translationAlert.classList.remove('show');
+    }
+    
+    // Show alert
+    setTimeout(() => {
+        translationAlert.classList.add('show');
+        
+        // Hide after 700ms
+        alertTimeout = setTimeout(() => {
+            translationAlert.classList.remove('show');
+        }, 1000);
+    }, 10); // Small delay to ensure animation triggers
+}
 
 // Update language dropdown excluding selected and detected languages
 function updateLanguageDropdown() {
@@ -286,10 +317,8 @@ async function handleTranslate() {
     translateButton.disabled = true;
 
     let translated_doc_url = await translateFile(currentDocument.file);
-    console.log("Translated data: " + translated_doc_url);
     try {
-        // Use a simple fetch without extra headers or mode options
-        const response = await fetch(translated_doc_url,{
+        const response = await fetch(translated_doc_url, {
             method: 'GET',
         });
         
@@ -297,16 +326,11 @@ async function handleTranslate() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        // Directly obtain the arrayBuffer from the response
         const arrayBuffer = await response.arrayBuffer();
-        
-        // Convert the ArrayBuffer to HTML using Mammoth.js
         const result = await mammoth.convertToHtml({ arrayBuffer });
         
-        // Determine target language from UI (e.g., "es" for Spanish)
         const targetLang = detectLang(selectedLanguage.textContent);
         
-        // Update the current document with the translated content and new file
         currentDocument = {
             name: currentDocument.name.replace('.docx', `_${targetLang}.docx`),
             size: arrayBuffer.byteLength,
@@ -318,8 +342,8 @@ async function handleTranslate() {
             })
         };
 
-        // Refresh the UI with the new document content
         updateViewScreen();
+        showTranslationAlert(); // Show success alert
     } catch (error) {
         console.error('Error fetching translated document:', error);
         alert(`Error loading translated document. Please try again.`);
